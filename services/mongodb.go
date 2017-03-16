@@ -30,6 +30,17 @@ func GetGames() ([]models.Game) {
 	return result;
 }
 
+func GetGame(id bson.ObjectId) (models.Game) {
+	result := models.Game{}
+	connection := session.DB("tictactoe").C("games")
+	err = connection.FindId(id).One(&result)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return result;
+}
+
 func GetUser(id bson.ObjectId) (models.User) {
 	result := models.User{}
 	connection := session.DB("tictactoe").C("users")
