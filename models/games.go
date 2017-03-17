@@ -19,8 +19,8 @@ type Game struct {
 
 	CreatedDate	time.Time	`json:"createdDate" bson:"createdDate"`
 
-	Player1Id	bson.ObjectId	`json:"player1id" bson:"player1"`
-	Player2Id	bson.ObjectId	`json:"player2id" bson:"player2"`
+	Player1Id	bson.ObjectId	`json:"player1id" bson:"player1,omitempty"`
+	Player2Id	bson.ObjectId	`json:"player2id" bson:"player2,omitempty"`
 	Player1		User		`json:"player1" bson:"-"`
 	Player2		User		`json:"player2" bson:"-"`
 }

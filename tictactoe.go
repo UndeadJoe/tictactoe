@@ -5,6 +5,7 @@ import (
 	"github.com/martini-contrib/cors"
 	"./controllers"
 	"time"
+	"net/http"
 )
 
 func main() {
@@ -18,6 +19,10 @@ func main() {
 		AllowCredentials: true,
 		MaxAge: 	5 * time.Minute,
 	}))
+
+	m.Use(func(w http.ResponseWriter) {
+		w.Header().Set("Content-Type", "application/json")
+	})
 
 	m.Get("/games", controllers.GetGames)
 	m.Get("/games/(?P<id>[a-zA-Z0-9]{24})", controllers.GetGameById)
