@@ -5,6 +5,8 @@ import (
 	"../models"
 	"encoding/json"
 	"labix.org/v2/mgo/bson"
+	"github.com/go-martini/martini"
+	"log"
 )
 
 //{"status":"ok","data":[{"_id":"588af2478081d52dec3b79c5","title":"тест","status":20}]}
@@ -32,9 +34,10 @@ func GetGames() ([]byte) {
 	return str;
 }
 
-func GetGameById(id string) ([]byte) {
+func GetGameById(params martini.Params) ([]byte) {
 	var game = models.Game{}
-	game = services.GetGame(bson.ObjectIdHex(id))
+	var id = bson.ObjectIdHex(params["id"])
+	game = services.GetGame(id)
 
 	// population of player fields
 	// TODO: rewrite for native population method
@@ -45,4 +48,14 @@ func GetGameById(id string) ([]byte) {
 	str, _ := json.Marshal(result)
 
 	return str;
+}
+
+func CreateGame(params martini.Params) {
+	var (
+		gameTitle = params["title"]
+		userName = params["username"]
+		poleSize = params["polesize"]
+	)
+
+	log.Println(gameTitle, userName, poleSize)
 }

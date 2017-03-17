@@ -22,7 +22,6 @@ func GetGames() ([]models.Game) {
 	result := []models.Game{}
 	connection := session.DB("tictactoe").C("games")
 	err = connection.Find(bson.M{}).All(&result)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,9 +32,10 @@ func GetGames() ([]models.Game) {
 func GetGame(id bson.ObjectId) (models.Game) {
 	result := models.Game{}
 	connection := session.DB("tictactoe").C("games")
-	err = connection.FindId(id).One(&result)
+	err = connection.Find(bson.M{"_id" : id}).One(&result)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		result = models.Game{}
 	}
 
 	return result;
@@ -45,7 +45,6 @@ func GetUser(id bson.ObjectId) (models.User) {
 	result := models.User{}
 	connection := session.DB("tictactoe").C("users")
 	err = connection.Find(bson.M{"_id" : id}).One(&result)
-
 	if err != nil {
 		log.Fatal(err)
 	}
