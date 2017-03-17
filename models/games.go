@@ -28,3 +28,4 @@ type Game struct {
 type Field struct {
 	State 		int	`json:"state" bson:"state"`
 }
+
