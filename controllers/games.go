@@ -60,19 +60,23 @@ func CreateGame(res http.ResponseWriter, req *http.Request) {
 		Title		string
 		Username	string
 		AccessToken	string
+		PoleSize	int
 	}
 
 	result := utils.BodyToStruct(req)
 
 	access_token := result["access_token"]
+	poleSize := result["poleSize"]
 	if access_token == nil {
-		access_token = bson.NewObjectId().String()
-	}
+		access_token = bson.NewObjectId().String()}
+	if poleSize == nil {
+		poleSize = 3}
 
 	game := newGame{
 		Title: result["title"].(string),
 		Username: result["username"].(string),
-		AccessToken: access_token.(string)}
+		AccessToken: access_token.(string),
+		PoleSize: poleSize.(int)}
 
-	log.Printf("%s %s %s", game.Title, game.Username, game.AccessToken)
+	log.Println(game)
 }
