@@ -17,8 +17,7 @@ func main() {
 		AllowHeaders:     []string{"content-type,x-token"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		MaxAge: 	5 * time.Minute,
-	}))
+		MaxAge: 	5 * time.Minute}))
 
 	m.Use(func(w http.ResponseWriter) {
 		w.Header().Set("Content-Type", "application/json")
