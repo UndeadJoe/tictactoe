@@ -7,8 +7,7 @@ import (
 	"../services"
 )
 
-func GetUserById(id bson.ObjectId) (models.User) {
-	var user = models.User{}
+func GetUserById(id bson.ObjectId) (user models.User) {
 	user = services.GetUser(id)
 
 	//str, _ := json.Marshal(user)

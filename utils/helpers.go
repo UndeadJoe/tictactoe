@@ -6,9 +6,8 @@ import (
 	"log"
 )
 
-func BodyToStruct(req *http.Request) map[string]interface{} {
+func BodyToStruct(req *http.Request) (result map[string]interface{}) {
 	decoder := json.NewDecoder(req.Body)
-	var result map[string]interface{}
 	err := decoder.Decode(&result)
 	if err != nil {
 		log.Fatal(err)

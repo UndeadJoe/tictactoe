@@ -11,3 +11,12 @@ type User struct {
 	CreatedDate	time.Time	`json:"createdDate" bson:"createdDate"`
 }
 
+func (p *User) Create(username string) (user User) {
+
+	user = User{
+		Id: bson.NewObjectId(),
+		Name: username,
+		CreatedDate: time.Now()}
+
+	return user
+}

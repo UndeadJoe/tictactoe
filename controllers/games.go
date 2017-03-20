@@ -55,35 +55,24 @@ func GetGameById(params martini.Params) ([]byte) {
 }
 
 
-func CreateGame(res http.ResponseWriter, req *http.Request) {
-	type newGame struct {
-		Title		string
-		Username	string
-		AccessToken	string
-		PoleSize	int
-		Field		[][]models.Field
-	}
+func CreateGame(res http.ResponseWriter, req *http.Request) (result []byte) {
+	var (
+		params = utils.BodyToStruct(req)
+		game = models.Game{}
+		user = models.User{}
+		username = params["username"].(string)
+		accessToken = req.Header.Get("x-token")
+	)
 
-	result := utils.BodyToStruct(req)
-	access_token := result["access_token"]
-	poleSize := result["poleSize"]
-	if access_token == nil {
-		access_token = bson.NewObjectId().String()}
-	if poleSize == nil {
-		poleSize = 3.0}
+	if accessToken == "" {
+		accessToken = "000000000000000000000000"}
 
-	// new game initialize
-	game := newGame{
-		Title: result["title"].(string),
-		Username: result["username"].(string),
-		AccessToken: access_token.(string),
-		PoleSize: int(poleSize.(float64)),
-		Field: make([][]models.Field, int(poleSize.(float64)))}
+	user = services.AddUser(bson.ObjectIdHex(accessToken), username)
 
-	// make field array
-	for i := 0; i < int(poleSize.(float64)); i++ {
-		game.Field[i] = make([]models.Field, int(poleSize.(float64)))
-	}
-
+	game = game.Create(params, user)
 	log.Println(game)
+
+	result, _ = json.Marshal(game)
+
+	return result
 }
