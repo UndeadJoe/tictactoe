@@ -5,7 +5,6 @@ import (
 	"labix.org/v2/mgo/bson"
 	"log"
 	"../models"
-	"time"
 )
 
 var (
@@ -63,16 +62,15 @@ func GetUsers() (result []models.User) {
 
 func AddUser(id bson.ObjectId, username string) (result models.User) {
 	connection := session.DB("tictactoe").C("users")
-	users, _ := connection.Find(bson.M{	"$or": []bson.M{
-		bson.M{"name": username},
-		bson.M{"_id": id} } } ).Count()
-
-	if users == 0 {
-		err = connection.Insert(bson.M{"name": username, "createdDate": time.Now()})
-	}
+	// insert new user or update current
+	info, err := connection.Upsert(
+		bson.M{"$or": []bson.M{bson.M{"_id": id}, bson.M{"name": username} } },
+		bson.M{"name": username})
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Println(info)
 
 	err = connection.Find(bson.M{"name": username}).One(&result)
 	if err != nil {
