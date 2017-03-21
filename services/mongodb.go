@@ -65,14 +65,12 @@ func GetUsers() (result []models.User) {
 func AddUser(id bson.ObjectId, username string) (result models.User) {
 	connection := session.DB("tictactoe").C("users")
 	// insert new user or update current
-	info, err := connection.Upsert(
+	_, err := connection.Upsert(
 		bson.M{"$or": []bson.M{ bson.M{"_id": id}, bson.M{"name": username} }},
 		bson.M{"name": username})
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	log.Println(info)
 
 	err = connection.Find(bson.M{"name": username}).One(&result)
 	if err != nil {

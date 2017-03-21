@@ -39,11 +39,14 @@ func GetGameById(params martini.Params) ([]byte) {
 	var game = models.Game{}
 	var err = ""
 	var id = bson.ObjectIdHex(params["id"])
+	// TODO: rewrite to one return
 	if id.Valid() {
 		game, err = services.GetGame(id)
 
 		if err != "" {
-			return []byte(err)
+			result := map[string]interface{} {"status": "error", "error": err}
+			str, _ := json.Marshal(result)
+			return str
 		}
 	}
 

@@ -14,13 +14,13 @@ func main() {
 	m.Use(cors.Allow(&cors.Options{
 		AllowOrigins:     []string{"http://localhost"},
 		AllowMethods:     []string{"OPTIONS", "GET", "POST"},
-		AllowHeaders:     []string{"content-type,x-token"},
+		AllowHeaders:     []string{"content-type", "x-token"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge: 	5 * time.Minute}))
 
 	m.Use(func(w http.ResponseWriter) {
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "tapplication/json; charset=utf-8")
 	})
 
 	m.Get("/games", controllers.GetGames)
