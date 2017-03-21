@@ -64,18 +64,25 @@ func GetGameById(params martini.Params) ([]byte) {
 }
 
 
-func CreateGame(res http.ResponseWriter, req *http.Request) (result []byte) {
+func CreateGame(res http.ResponseWriter, req *http.Request) (str []byte) {
 	var (
 		params = utils.BodyToStruct(req)
 		game = models.Game{}
 		user = models.User{}
 		username = params["username"].(string)
 		accessToken = req.Header.Get("x-token")
+		err = ""
+		result = map[string]interface{} {}
 	)
 
 	user = CreateUser(accessToken, username)
-	game = game.Create(params, user)
-	result, _ = json.Marshal(game)
+	game, err = game.Create(params, user)
+	if err != "" {
+		result = map[string]interface{} {"status": "error", "error": err}
+	} else {
+		result = map[string]interface{} {"status": "ok", "game": game, "access_token": user.Id.Hex()}
+	}
+	str, _ = json.Marshal(result)
 
-	return result
+	return str
 }

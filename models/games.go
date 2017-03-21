@@ -4,6 +4,7 @@ import (
 	"labix.org/v2/mgo/bson"
 	"time"
 	"log"
+	"../config"
 )
 
 type Game struct {
@@ -30,23 +31,37 @@ type Field struct {
 	State 		int	`json:"state" bson:"state"`
 }
 
-func (p *Game) Create(data map[string]interface{}, user User) (game Game) {
+func GameStatus() map[string]interface{} {
+	result := map[string]interface{} {
+		"new": 0,
+		"active": 10,
+		"finished": 20,
+		"deleted": 30}
+
+	return result
+}
+
+func (p *Game) Create(data map[string]interface{}, user User) (Game, string) {
 	var (
-		title = data["title"].(string)
+		title = data["title"]
 		poleSize = data["poleSize"]
 		poleSizeInt = 3
+		status = GameStatus()["new"].(int)
 	)
+
+	if title == nil {
+		return Game{}, config.ErrGameTitleWrong.Error()}
 
 	if poleSize != nil {
 		poleSizeInt = int(poleSize.(float64))}
 
-	game = Game{
-		Title: title,
+	game := Game{
+		Title: title.(string),
 		PoleSize: poleSizeInt,
 		Field: make([][]Field, poleSizeInt),
 		Player1Id: user.Id,
 		Player1: user,
-	}
+		Status: status}
 
 	// make field array
 	for i := 0; i < poleSizeInt; i++ {
@@ -55,5 +70,5 @@ func (p *Game) Create(data map[string]interface{}, user User) (game Game) {
 
 	log.Println(game.Player1)
 
-	return game
+	return game, ""
 }

@@ -18,3 +18,4 @@ func NewApiError(err error) *ApiError {
 }
 
 var ErrGameIdWrong = &ApiError{130, http.StatusBadRequest, "Wrong Game Id", ""}
+var ErrGameTitleWrong = &ApiError{131, http.StatusBadRequest, "Wrong Game title", ""}
