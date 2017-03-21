@@ -13,8 +13,8 @@
       <root url="file://$PROJECT_DIR$/controllers" />
       <root url="file://$PROJECT_DIR$/utils" />
       <root url="file://$PROJECT_DIR$/models" />
-      <root url="file://$PROJECT_DIR$" />
       <root url="file://$PROJECT_DIR$/config" />
+      <root url="file://$PROJECT_DIR$" />
       <root url="file://$PROJECT_DIR$/services" />
     </excluded>
   </library>

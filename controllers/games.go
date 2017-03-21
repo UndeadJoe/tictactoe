@@ -4,6 +4,7 @@ import (
 	"../services"
 	"../models"
 	"../utils"
+//	"../config"
 	"encoding/json"
 	"labix.org/v2/mgo/bson"
 	"github.com/go-martini/martini"
@@ -36,9 +37,14 @@ func GetGames() ([]byte) {
 
 func GetGameById(params martini.Params) ([]byte) {
 	var game = models.Game{}
+	var err = ""
 	var id = bson.ObjectIdHex(params["id"])
 	if id.Valid() {
-		game = services.GetGame(id)
+		game, err = services.GetGame(id)
+
+		if err != "" {
+			return []byte(err)
+		}
 	}
 
 	// population of player fields
