@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"labix.org/v2/mgo/bson"
 	"github.com/go-martini/martini"
-	"log"
+	//"log"
 	"net/http"
 )
 
@@ -73,14 +73,8 @@ func CreateGame(res http.ResponseWriter, req *http.Request) (result []byte) {
 		accessToken = req.Header.Get("x-token")
 	)
 
-	if accessToken == "" {
-		accessToken = "000000000000000000000000"}
-
-	user = services.AddUser(bson.ObjectIdHex(accessToken), username)
-
+	user = CreateUser(accessToken, username)
 	game = game.Create(params, user)
-	log.Println(game)
-
 	result, _ = json.Marshal(game)
 
 	return result

@@ -12,7 +12,7 @@ func main() {
 	m := martini.Classic()
 
 	m.Use(cors.Allow(&cors.Options{
-		AllowOrigins:     []string{"http://localhost"},
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"OPTIONS", "GET", "POST"},
 		AllowHeaders:     []string{"content-type", "x-token"},
 		ExposeHeaders:    []string{"Content-Length"},

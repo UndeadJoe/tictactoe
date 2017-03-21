@@ -24,3 +24,11 @@ func GetUsers() ([]byte) {
 
 	return str;
 }
+
+func CreateUser(accessToken string, username string) (user models.User) {
+	if accessToken == "" {
+		accessToken = "000000000000000000000000"}
+
+	user = services.AddUser(bson.ObjectIdHex(accessToken), username)
+	return user
+}
