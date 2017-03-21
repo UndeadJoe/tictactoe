@@ -3,8 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"labix.org/v2/mgo/bson"
-	"../models"
-	"../services"
+	"tictactoe/models"
+	"tictactoe/services"
 )
 
 func GetUserById(id bson.ObjectId) (user models.User) {

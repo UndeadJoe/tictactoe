@@ -4,7 +4,7 @@ import (
 	"labix.org/v2/mgo/bson"
 	"time"
 	"log"
-	"../config"
+	"tictactoe/config"
 )
 
 type Game struct {

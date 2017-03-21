@@ -3,12 +3,18 @@ package main
 import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/cors"
-	"./controllers"
+	"tictactoe/controllers"
 	"time"
 	"net/http"
+	"os"
 )
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
 	m := martini.Classic()
 
 	m.Use(cors.Allow(&cors.Options{
@@ -20,7 +26,7 @@ func main() {
 		MaxAge: 	5 * time.Minute}))
 
 	m.Use(func(w http.ResponseWriter) {
-		w.Header().Set("Content-Type", "tapplication/json; charset=utf-8")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	})
 
 	m.Get("/games", controllers.GetGames)
@@ -30,5 +36,5 @@ func main() {
 
 	m.Get("/users", controllers.GetUsers)
 
-	m.Run()
+	m.RunOnAddr("localhost:" + port)
 }

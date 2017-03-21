@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"../services"
-	"../models"
-	"../utils"
+	"tictactoe/services"
+	"tictactoe/models"
+	"tictactoe/utils"
 //	"../config"
 	"encoding/json"
 	"labix.org/v2/mgo/bson"
