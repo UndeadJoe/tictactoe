@@ -93,14 +93,14 @@ func AddGame(game models.Game) (newId bson.ObjectId, err config.ApiError) {
 
 func JoinGame(gameId bson.ObjectId, userId bson.ObjectId) (game models.Game, err config.ApiError) {
 	connection := session.DB("tictactoe").C("games")
+	status     := models.GameStatus()["active"].(int)
 	change := mgo.Change{
-		Update:    bson.M{"$set": bson.M{"player2": userId}},
+		Update:    bson.M{"$set": bson.M{"player2": userId, "status": status}},
 		ReturnNew: true}
 
-	info, e := connection.Find(bson.M{"_id": gameId}).Apply(change, &game)
+	_, e := connection.Find(bson.M{"_id": gameId}).Apply(change, &game)
 
-	log.Println(game)
-	if info.Updated == 0 {
+	if e != nil {
 		err = config.NewApiError(e)
 	}
 
