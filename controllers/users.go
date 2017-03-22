@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"tictactoe/models"
-	"tictactoe/services"
-	"tictactoe/config"
 	"encoding/json"
 	"labix.org/v2/mgo/bson"
+	"tictactoe/config"
+	"tictactoe/models"
+	"tictactoe/services"
 )
 
 func GetUserById(id bson.ObjectId) (user models.User, err config.ApiError) {
@@ -16,8 +16,7 @@ func GetUserById(id bson.ObjectId) (user models.User, err config.ApiError) {
 	return
 }
 
-
-func GetUsers() ([]byte) {
+func GetUsers() []byte {
 	var users = []models.User{}
 	users = services.GetUsers()
 
@@ -26,10 +25,12 @@ func GetUsers() ([]byte) {
 	return str
 }
 
-func CreateUser(accessToken string, username string) (user models.User) {
+func FindUser(accessToken string, username string) (user models.User) {
 	if accessToken == "" {
-		accessToken = "000000000000000000000000"}
+		user, _ = services.AddUser(username)
+	} else {
+		user, _ = services.GetUser(bson.ObjectIdHex(accessToken))
+	}
 
-	user = services.AddUser(bson.ObjectIdHex(accessToken), username)
-	return user
+	return
 }

@@ -59,22 +59,23 @@ func GetUsers() (result []models.User) {
 	return result
 }
 
-func AddUser(id bson.ObjectId, username string) (result models.User) {
+func AddUser(username string) (result models.User, err config.ApiError) {
 	connection := session.DB("tictactoe").C("users")
 	// insert new user or update current
-	_, err := connection.Upsert(
-		bson.M{"_id": id},
-		bson.M{"name": username})
-	if err != nil {
-		log.Fatal(err)
+	info, e := connection.Upsert(bson.M{"username": ""}, bson.M{"name": username})
+	if e != nil {
+		log.Fatal(e)
 	}
 
-	err = connection.Find(bson.M{"name": username}).One(&result)
-	if err != nil {
-		log.Fatal(err)
+	if (info.UpsertedId == nil) {
+		err = config.ErrCreateUser
+	} else {
+		result = models.User{}
+		result = result.Create(username)
+		result.Id = info.UpsertedId.(bson.ObjectId)
 	}
 
-	return result
+	return
 }
 
 func AddGame(game models.Game) (newId bson.ObjectId, err config.ApiError) {
@@ -86,6 +87,22 @@ func AddGame(game models.Game) (newId bson.ObjectId, err config.ApiError) {
 	newId = info.UpsertedId.(bson.ObjectId)
 	if e != nil {
 		log.Fatal(e)
+	}
+
+	return
+}
+
+func JoinGame(gameId bson.ObjectId, userId bson.ObjectId) (game models.Game, err config.ApiError) {
+	connection := session.DB("tictactoe").C("games")
+	change := mgo.Change{
+		Update: bson.M{"$set": bson.M{"player2": userId}},
+		ReturnNew: true}
+
+	info, e := connection.Find(bson.M{"_id": gameId}).Apply(change, &game)
+
+	log.Println(game)
+	if info.Updated == 0 {
+		err = config.NewApiError(e)
 	}
 
 	return

@@ -9,7 +9,6 @@ import (
 	"labix.org/v2/mgo/bson"
 	"github.com/go-martini/martini"
 	"net/http"
-	"log"
 )
 
 type resultData struct {
@@ -35,6 +34,19 @@ func GetGames() ([]byte) {
 	return str
 }
 
+// population of player fields
+// TODO: rewrite for native population method
+func populatePlayers(game *models.Game) (err config.ApiError) {
+	if game.Player1Id.Valid() {
+		game.Player1, err = GetUserById(game.Player1Id)
+	}
+
+	if game.Player2Id.Valid() {
+		game.Player2, err = GetUserById(game.Player2Id)
+	}
+	return
+}
+
 func getGameById(id bson.ObjectId) (game models.Game, err config.ApiError) {
 
 	// TODO: rewrite to one return
@@ -48,13 +60,7 @@ func getGameById(id bson.ObjectId) (game models.Game, err config.ApiError) {
 		return
 	}
 
-	// population of player fields
-	// TODO: rewrite for native population method
-	game.Player1, err = GetUserById(game.Player1Id)
-	if game.Player2Id.Valid() {
-		game.Player2, err = GetUserById(game.Player2Id)
-	}
-
+	_ = populatePlayers(&game)
 	return
 }
 
@@ -88,7 +94,7 @@ func CreateGame(res http.ResponseWriter, req *http.Request) (str []byte) {
 		result = map[string]interface{} {}
 	)
 
-	user = CreateUser(accessToken, username)
+	user = FindUser(accessToken, username)
 	game, err := game.Create(params, user)
 	if err.Code != 0 {
 		result = map[string]interface{} {"status": "error", "error": err}
@@ -106,19 +112,30 @@ func JoinGame(res http.ResponseWriter, req *http.Request, params martini.Params)
 		reqParams = utils.BodyToStruct(req)
 		username = reqParams["username"]
 		accessToken = req.Header.Get("x-token")
-		result = map[string]interface{} {}
+		result = map[string]interface{}{}
 		user = models.User{}
 		game = models.Game{}
+		err config.ApiError
 	)
 
-	if (username == nil || accessToken == "") {
-		result = map[string]interface{} {"status": "error", "error": config.ErrNoUser.Message}
-		return
-	}
-	user = CreateUser(accessToken, username.(string))
-	result = map[string]interface{} {"status": "ok", "game": game, "access_token": user.Id.Hex()}
+	if (username == nil && accessToken == "") {
+		result = map[string]interface{}{"status": "error", "error": config.ErrNoUser}
+	} else {
+		user = FindUser(accessToken, username.(string))
 
-	log.Println(id)
+		game, err = getGameById(id)
+		if err.Code != 0 {
+			result = map[string]interface{}{"status": "error", "error": err}
+		}
+
+		game, err = services.JoinGame(id, user.Id)
+		if err.Code != 0 {
+			result = map[string]interface{}{"status": "error", "error": err}
+		} else {
+			_ = populatePlayers(&game)
+			result = map[string]interface{}{"status": "ok", "game": game, "access_token": user.Id.Hex()}
+		}
+	}
 
 	str, _ = json.Marshal(result)
 	return

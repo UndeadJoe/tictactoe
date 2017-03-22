@@ -71,3 +71,8 @@ func (p *Game) Create(data map[string]interface{}, user User) (Game, config.ApiE
 
 	return game, config.ApiError{}
 }
+
+func (p *Game) JoinGame(id bson.ObjectId) (err config.ApiError) {
+	p.Player2Id = id
+	return
+}

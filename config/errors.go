@@ -13,11 +13,12 @@ func (e *ApiError) Error() string {
 	return e.Message
 }
 
-func NewApiError(err error) *ApiError {
-	return &ApiError{0, http.StatusInternalServerError, err.Error(), ""}
+func NewApiError(err error) ApiError {
+	return ApiError{500, http.StatusInternalServerError, err.Error(), ""}
 }
 
 var ErrNoUser = ApiError{120, http.StatusInternalServerError, "Не указан пользователь", ""}
+var ErrCreateUser = ApiError{121, http.StatusInternalServerError, "Ошибка создания пользователя", ""}
 
 var ErrGameIdWrong = ApiError{130, http.StatusBadRequest, "Нет игры с данным ID", ""}
 var ErrGameTitleWrong = ApiError{131, http.StatusBadRequest, "Неверный заголовок игры", ""}
