@@ -38,6 +38,7 @@ func main() {
 
 	m.Post("/games", controllers.CreateGame)
 	m.Post("/games/(?P<id>[a-zA-Z0-9]{24})/join", controllers.JoinGame)
+	m.Post("/games/(?P<id>[a-zA-Z0-9]{24})/move", controllers.MakeMove)
 
 	m.Get("/users", controllers.GetUsers)
 

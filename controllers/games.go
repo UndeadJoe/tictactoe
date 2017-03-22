@@ -9,6 +9,7 @@ import (
 	"tictactoe/models"
 	"tictactoe/services"
 	"tictactoe/utils"
+	"os/user"
 )
 
 type resultData struct {
@@ -111,7 +112,7 @@ func JoinGame(res http.ResponseWriter, req *http.Request, params martini.Params)
 		reqParams   = utils.BodyToStruct(req)
 		username    = reqParams["username"]
 		accessToken = req.Header.Get("x-token")
-		result      = map[string]interface{}{}
+		result      map[string]interface{}
 		user        = models.User{}
 		game        = models.Game{}
 		err         config.ApiError
@@ -135,6 +136,17 @@ func JoinGame(res http.ResponseWriter, req *http.Request, params martini.Params)
 			result = map[string]interface{}{"status": "ok", "game": game, "access_token": user.Id.Hex()}
 		}
 	}
+
+	str, _ = json.Marshal(result)
+	return
+}
+
+func MakeMove(res http.ResponseWriter, req *http.Request) (str []byte) {
+	var (
+		result      map[string]interface{}
+	)
+
+	result = map[string]interface{}{"status": "ok"}
 
 	str, _ = json.Marshal(result)
 	return
