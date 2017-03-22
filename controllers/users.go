@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"encoding/json"
-	"labix.org/v2/mgo/bson"
 	"tictactoe/models"
 	"tictactoe/services"
 	"tictactoe/config"
+	"encoding/json"
+	"labix.org/v2/mgo/bson"
 )
 
 func GetUserById(id bson.ObjectId) (user models.User, err config.ApiError) {

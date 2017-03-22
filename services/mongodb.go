@@ -1,11 +1,11 @@
 package services
 
 import (
+	"tictactoe/models"
+	"tictactoe/config"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"log"
-	"tictactoe/models"
-	"tictactoe/config"
 )
 
 var (

@@ -4,14 +4,12 @@ import (
 	"tictactoe/services"
 	"tictactoe/models"
 	"tictactoe/utils"
-//	"../config"
+	"tictactoe/config"
 	"encoding/json"
 	"labix.org/v2/mgo/bson"
 	"github.com/go-martini/martini"
-	//"log"
 	"net/http"
 	"log"
-	"tictactoe/config"
 )
 
 type resultData struct {
@@ -34,7 +32,7 @@ func GetGames() ([]byte) {
 	result := map[string]interface{} {"status": "ok", "data": data}
 	str, _ := json.Marshal(result)
 
-	return str;
+	return str
 }
 
 func getGameById(id bson.ObjectId) (game models.Game, err config.ApiError) {
@@ -76,7 +74,7 @@ func GetGame(params martini.Params) ([]byte) {
 	result := map[string]interface{} {"status": "ok", "game": game}
 	str, _ := json.Marshal(result)
 
-	return str;
+	return str
 }
 
 
@@ -95,7 +93,6 @@ func CreateGame(res http.ResponseWriter, req *http.Request) (str []byte) {
 	if err.Code != 0 {
 		result = map[string]interface{} {"status": "error", "error": err}
 	} else {
-		// TODO: Доделать обработку ошибок
 		game.Id, _ = services.AddGame(game)
 		result = map[string]interface{} {"status": "ok", "game": game, "access_token": user.Id.Hex()}
 	}

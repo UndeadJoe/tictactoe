@@ -1,9 +1,9 @@
 package models
 
 import (
+	"tictactoe/config"
 	"labix.org/v2/mgo/bson"
 	"time"
-	"tictactoe/config"
 )
 
 type Game struct {
