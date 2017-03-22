@@ -3,7 +3,6 @@ package models
 import (
 	"labix.org/v2/mgo/bson"
 	"time"
-	"log"
 	"tictactoe/config"
 )
 
@@ -61,14 +60,13 @@ func (p *Game) Create(data map[string]interface{}, user User) (Game, string) {
 		Field: make([][]Field, poleSizeInt),
 		Player1Id: user.Id,
 		Player1: user,
-		Status: status}
+		Status: status,
+		CreatedDate: time.Now()}
 
 	// make field array
 	for i := 0; i < poleSizeInt; i++ {
 		game.Field[i] = make([]Field, poleSizeInt)
 	}
-
-	log.Println(game.Player1)
 
 	return game, ""
 }

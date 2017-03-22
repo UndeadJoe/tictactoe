@@ -79,3 +79,15 @@ func AddUser(id bson.ObjectId, username string) (result models.User) {
 
 	return result
 }
+
+func AddGame(game models.Game) (newId bson.ObjectId, err config.ApiError) {
+	connection := session.DB("tictactoe").C("games")
+	newId = bson.NewObjectId()
+	game.Id = newId
+	e := connection.Insert(game)
+	if e != nil {
+		log.Fatal(e)
+	}
+
+	return
+}

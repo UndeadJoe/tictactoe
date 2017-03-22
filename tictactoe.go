@@ -10,10 +10,10 @@ import (
 )
 
 func main() {
+	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
-	}
+	if host == "" { host = "localhost" }
+	if port == "" { port = "3000" }
 
 	m := martini.Classic()
 
@@ -36,5 +36,5 @@ func main() {
 
 	m.Get("/users", controllers.GetUsers)
 
-	m.RunOnAddr("localhost:" + port)
+	m.RunOnAddr(host + ":" + port)
 }

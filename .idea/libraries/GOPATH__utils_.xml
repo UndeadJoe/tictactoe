@@ -1,20 +1,21 @@
 <component name="libraryTable">
   <library name="GOPATH &lt;utils&gt;">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../src/labix.org" />
-      <root url="file://$PROJECT_DIR$/../src/github.com" />
+      <root url="file://$PROJECT_DIR$/../labix.org" />
+      <root url="file://$PROJECT_DIR$/../github.com" />
     </CLASSES>
+    <JAVADOC />
     <SOURCES>
-      <root url="file://$PROJECT_DIR$/../src/labix.org" />
-      <root url="file://$PROJECT_DIR$/../src/github.com" />
+      <root url="file://$PROJECT_DIR$/../labix.org" />
+      <root url="file://$PROJECT_DIR$/../github.com" />
     </SOURCES>
     <excluded>
-      <root url="file://$PROJECT_DIR$/controllers" />
-      <root url="file://$PROJECT_DIR$/utils" />
-      <root url="file://$PROJECT_DIR$/models" />
       <root url="file://$PROJECT_DIR$/config" />
-      <root url="file://$PROJECT_DIR$" />
+      <root url="file://$PROJECT_DIR$/controllers" />
       <root url="file://$PROJECT_DIR$/services" />
+      <root url="file://$PROJECT_DIR$/models" />
+      <root url="file://$PROJECT_DIR$/utils" />
+      <root url="file://$PROJECT_DIR$" />
     </excluded>
   </library>
 </component>

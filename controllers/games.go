@@ -80,6 +80,8 @@ func CreateGame(res http.ResponseWriter, req *http.Request) (str []byte) {
 	if err != "" {
 		result = map[string]interface{} {"status": "error", "error": err}
 	} else {
+		id, _ := services.AddGame(game)
+		game.Id = id
 		result = map[string]interface{} {"status": "ok", "game": game, "access_token": user.Id.Hex()}
 	}
 	str, _ = json.Marshal(result)
