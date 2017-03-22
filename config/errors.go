@@ -17,5 +17,6 @@ func NewApiError(err error) *ApiError {
 	return &ApiError{0, http.StatusInternalServerError, err.Error(), ""}
 }
 
-var ErrGameIdWrong = &ApiError{130, http.StatusBadRequest, "Wrong Game Id", ""}
-var ErrGameTitleWrong = &ApiError{131, http.StatusBadRequest, "Wrong Game title", ""}
+var ErrGameIdWrong = &ApiError{130, http.StatusBadRequest, "Нет игры с данным ID", ""}
+var ErrGameTitleWrong = &ApiError{131, http.StatusBadRequest, "Неверный заголовок игры", ""}
+var ErrCreateGame = ApiError{131, http.StatusBadRequest, "Ошибка создания игры", ""}

@@ -82,9 +82,11 @@ func AddUser(id bson.ObjectId, username string) (result models.User) {
 
 func AddGame(game models.Game) (newId bson.ObjectId, err config.ApiError) {
 	connection := session.DB("tictactoe").C("games")
-	newId = bson.NewObjectId()
-	game.Id = newId
-	e := connection.Insert(game)
+	info, e := connection.Upsert(bson.M{"title": ""}, game)
+	if info.Updated == 0 {
+		err = config.ErrCreateGame
+	}
+	newId = info.UpsertedId.(bson.ObjectId)
 	if e != nil {
 		log.Fatal(e)
 	}

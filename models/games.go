@@ -61,7 +61,8 @@ func (p *Game) Create(data map[string]interface{}, user User) (Game, string) {
 		Player1Id: user.Id,
 		Player1: user,
 		Status: status,
-		CreatedDate: time.Now()}
+		CreatedDate: time.Now(),
+		CurrentTurn: 1}
 
 	// make field array
 	for i := 0; i < poleSizeInt; i++ {
