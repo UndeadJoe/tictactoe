@@ -9,7 +9,6 @@ import (
 	"tictactoe/models"
 	"tictactoe/services"
 	"tictactoe/utils"
-	"os/user"
 )
 
 type resultData struct {
