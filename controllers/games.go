@@ -17,7 +17,7 @@ type resultData struct {
 	Status int           `json:"status"`
 }
 
-func GetGames() []byte {
+func GetGames() (str []byte) {
 	var games = []models.Game{}
 	var data = []resultData{}
 	games = services.GetGames()
@@ -29,9 +29,9 @@ func GetGames() []byte {
 			Status: game.Status})
 	}
 	result := map[string]interface{}{"status": "ok", "data": data}
-	str, _ := json.Marshal(result)
+	str, _ = json.Marshal(result)
 
-	return str
+	return
 }
 
 // population of player fields
@@ -64,7 +64,7 @@ func getGameById(id bson.ObjectId) (game models.Game, err config.ApiError) {
 	return
 }
 
-func GetGame(params martini.Params) []byte {
+func GetGame(params martini.Params) (str []byte) {
 	var game = models.Game{}
 	var err config.ApiError
 	var id = bson.ObjectIdHex(params["id"])
@@ -73,14 +73,14 @@ func GetGame(params martini.Params) []byte {
 
 	if err.Code != 0 {
 		result := map[string]interface{}{"status": "error", "error": err}
-		str, _ := json.Marshal(result)
-		return str
+		str, _ = json.Marshal(result)
+		return
 	}
 
 	result := map[string]interface{}{"status": "ok", "game": game}
-	str, _ := json.Marshal(result)
+	str, _ = json.Marshal(result)
 
-	return str
+	return
 }
 
 func CreateGame(res http.ResponseWriter, req *http.Request) (str []byte) {
