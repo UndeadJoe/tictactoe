@@ -29,26 +29,23 @@ func GetGames() (result []models.Game) {
 	return result;
 }
 
-func GetGame(id bson.ObjectId) (models.Game, string) {
+func GetGame(id bson.ObjectId) (models.Game, config.ApiError) {
 	connection := session.DB("tictactoe").C("games")
 	result := models.Game{}
 	err = connection.Find(bson.M{"_id" : id}).One(&result)
 	if err != nil {
 		result = models.Game{}
-		return result, config.ErrGameIdWrong.Error()
+		return result, config.ErrGameIdWrong
 	}
 
-	return result, "";
+	return result, config.ApiError{}
 }
 
-func GetUser(id bson.ObjectId) (result models.User) {
+func GetUser(id bson.ObjectId) (result models.User, err error) {
 	connection := session.DB("tictactoe").C("users")
 	err = connection.Find(bson.M{"_id" : id}).One(&result)
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	return result;
+	return
 }
 
 func GetUsers() (result []models.User) {
@@ -59,14 +56,14 @@ func GetUsers() (result []models.User) {
 		log.Fatal(err)
 	}
 
-	return result;
+	return result
 }
 
 func AddUser(id bson.ObjectId, username string) (result models.User) {
 	connection := session.DB("tictactoe").C("users")
 	// insert new user or update current
 	_, err := connection.Upsert(
-		bson.M{"$or": []bson.M{ bson.M{"_id": id}, bson.M{"name": username} }},
+		bson.M{"_id": id},
 		bson.M{"name": username})
 	if err != nil {
 		log.Fatal(err)

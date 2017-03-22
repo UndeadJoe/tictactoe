@@ -40,7 +40,7 @@ func GameStatus() map[string]interface{} {
 	return result
 }
 
-func (p *Game) Create(data map[string]interface{}, user User) (Game, string) {
+func (p *Game) Create(data map[string]interface{}, user User) (Game, config.ApiError) {
 	var (
 		title = data["title"]
 		poleSize = data["poleSize"]
@@ -49,7 +49,7 @@ func (p *Game) Create(data map[string]interface{}, user User) (Game, string) {
 	)
 
 	if title == nil {
-		return Game{}, config.ErrGameTitleWrong.Error()}
+		return Game{}, config.ErrGameTitleWrong}
 
 	if poleSize != nil {
 		poleSizeInt = int(poleSize.(float64))}
@@ -69,5 +69,5 @@ func (p *Game) Create(data map[string]interface{}, user User) (Game, string) {
 		game.Field[i] = make([]Field, poleSizeInt)
 	}
 
-	return game, ""
+	return game, config.ApiError{}
 }

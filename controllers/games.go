@@ -10,6 +10,8 @@ import (
 	"github.com/go-martini/martini"
 	//"log"
 	"net/http"
+	"log"
+	"tictactoe/config"
 )
 
 type resultData struct {
@@ -35,26 +37,40 @@ func GetGames() ([]byte) {
 	return str;
 }
 
-func GetGameById(params martini.Params) ([]byte) {
-	var game = models.Game{}
-	var err = ""
-	var id = bson.ObjectIdHex(params["id"])
-	// TODO: rewrite to one return
-	if id.Valid() {
-		game, err = services.GetGame(id)
+func getGameById(id bson.ObjectId) (game models.Game, err config.ApiError) {
 
-		if err != "" {
-			result := map[string]interface{} {"status": "error", "error": err}
-			str, _ := json.Marshal(result)
-			return str
-		}
+	// TODO: rewrite to one return
+	if !id.Valid() {
+		err = config.ErrGameIdWrong
+		return
+	}
+
+	game, err = services.GetGame(id)
+	if err.Code != 0 {
+		return
 	}
 
 	// population of player fields
 	// TODO: rewrite for native population method
-	game.Player1 = GetUserById(game.Player1Id)
+	game.Player1, err = GetUserById(game.Player1Id)
 	if game.Player2Id.Valid() {
-		game.Player2 = GetUserById(game.Player2Id)
+		game.Player2, err = GetUserById(game.Player2Id)
+	}
+
+	return
+}
+
+func GetGame(params martini.Params) ([]byte) {
+	var game = models.Game{}
+	var err config.ApiError
+	var id = bson.ObjectIdHex(params["id"])
+
+	game, err = getGameById(id)
+
+	if (err.Code != 0) {
+		result := map[string]interface{} {"status": "error", "error": err}
+		str, _ := json.Marshal(result)
+		return str
 	}
 
 	result := map[string]interface{} {"status": "ok", "game": game}
@@ -71,13 +87,12 @@ func CreateGame(res http.ResponseWriter, req *http.Request) (str []byte) {
 		user = models.User{}
 		username = params["username"].(string)
 		accessToken = req.Header.Get("x-token")
-		err = ""
 		result = map[string]interface{} {}
 	)
 
 	user = CreateUser(accessToken, username)
-	game, err = game.Create(params, user)
-	if err != "" {
+	game, err := game.Create(params, user)
+	if err.Code != 0 {
 		result = map[string]interface{} {"status": "error", "error": err}
 	} else {
 		// TODO: Доделать обработку ошибок
@@ -85,6 +100,29 @@ func CreateGame(res http.ResponseWriter, req *http.Request) (str []byte) {
 		result = map[string]interface{} {"status": "ok", "game": game, "access_token": user.Id.Hex()}
 	}
 	str, _ = json.Marshal(result)
+	return
+}
 
-	return str
+func JoinGame(res http.ResponseWriter, req *http.Request, params martini.Params) (str []byte) {
+	var (
+		id = bson.ObjectIdHex(params["id"])
+		reqParams = utils.BodyToStruct(req)
+		username = reqParams["username"]
+		accessToken = req.Header.Get("x-token")
+		result = map[string]interface{} {}
+		user = models.User{}
+		game = models.Game{}
+	)
+
+	if (username == nil || accessToken == "") {
+		result = map[string]interface{} {"status": "error", "error": config.ErrNoUser.Message}
+		return
+	}
+	user = CreateUser(accessToken, username.(string))
+	result = map[string]interface{} {"status": "ok", "game": game, "access_token": user.Id.Hex()}
+
+	log.Println(id)
+
+	str, _ = json.Marshal(result)
+	return
 }

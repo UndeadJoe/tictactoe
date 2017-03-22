@@ -5,14 +5,15 @@ import (
 	"labix.org/v2/mgo/bson"
 	"tictactoe/models"
 	"tictactoe/services"
+	"tictactoe/config"
 )
 
-func GetUserById(id bson.ObjectId) (user models.User) {
-	user = services.GetUser(id)
-
-	//str, _ := json.Marshal(user)
-
-	return user;
+func GetUserById(id bson.ObjectId) (user models.User, err config.ApiError) {
+	user, e := services.GetUser(id)
+	if e != nil {
+		err = config.ErrNoUser
+	}
+	return
 }
 
 
@@ -22,7 +23,7 @@ func GetUsers() ([]byte) {
 
 	str, _ := json.Marshal(users)
 
-	return str;
+	return str
 }
 
 func CreateUser(accessToken string, username string) (user models.User) {

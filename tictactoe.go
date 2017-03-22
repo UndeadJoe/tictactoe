@@ -34,9 +34,10 @@ func main() {
 	})
 
 	m.Get("/games", controllers.GetGames)
-	m.Get("/games/(?P<id>[a-zA-Z0-9]{24})", controllers.GetGameById)
+	m.Get("/games/(?P<id>[a-zA-Z0-9]{24})", controllers.GetGame)
 
 	m.Post("/games", controllers.CreateGame)
+	m.Post("/games/(?P<id>[a-zA-Z0-9]{24})/join", controllers.JoinGame)
 
 	m.Get("/users", controllers.GetUsers)
 
