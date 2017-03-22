@@ -9,6 +9,7 @@ import (
 	"tictactoe/models"
 	"tictactoe/services"
 	"tictactoe/utils"
+	"log"
 )
 
 type resultData struct {
@@ -140,10 +141,15 @@ func JoinGame(res http.ResponseWriter, req *http.Request, params martini.Params)
 	return
 }
 
-func MakeMove(res http.ResponseWriter, req *http.Request) (str []byte) {
+func MakeMove(res http.ResponseWriter, req *http.Request, params martini.Params) (str []byte) {
 	var (
 		result      map[string]interface{}
+		reqParams   = utils.BodyToStruct(req)
+		id          = bson.ObjectIdHex(params["id"])
+		accessToken = req.Header.Get("x-token")
 	)
+
+	log.Println(id, accessToken, reqParams["row"], reqParams["col"])
 
 	result = map[string]interface{}{"status": "ok"}
 
