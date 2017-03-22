@@ -3,17 +3,21 @@ package main
 import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/cors"
-	"tictactoe/controllers"
-	"time"
 	"net/http"
 	"os"
+	"tictactoe/controllers"
+	"time"
 )
 
 func main() {
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
-	if host == "" { host = "localhost" }
-	if port == "" { port = "3000" }
+	if host == "" {
+		host = "localhost"
+	}
+	if port == "" {
+		port = "3000"
+	}
 
 	m := martini.Classic()
 
@@ -23,7 +27,7 @@ func main() {
 		AllowHeaders:     []string{"content-type", "x-token"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		MaxAge: 	5 * time.Minute}))
+		MaxAge:           5 * time.Minute}))
 
 	m.Use(func(w http.ResponseWriter) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
