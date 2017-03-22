@@ -1,34 +1,34 @@
 package controllers
 
 import (
-	"tictactoe/services"
-	"tictactoe/models"
-	"tictactoe/utils"
-	"tictactoe/config"
 	"encoding/json"
-	"labix.org/v2/mgo/bson"
 	"github.com/go-martini/martini"
+	"labix.org/v2/mgo/bson"
 	"net/http"
+	"tictactoe/config"
+	"tictactoe/models"
+	"tictactoe/services"
+	"tictactoe/utils"
 )
 
 type resultData struct {
-	Id	bson.ObjectId	`json:"_id"`
-	Title	string		`json:"title"`
-	Status	int		`json:"status"`
+	Id     bson.ObjectId `json:"_id"`
+	Title  string        `json:"title"`
+	Status int           `json:"status"`
 }
 
-func GetGames() ([]byte) {
+func GetGames() []byte {
 	var games = []models.Game{}
 	var data = []resultData{}
 	games = services.GetGames()
 
 	for _, game := range games {
-		data = append(data,  resultData {
-			Id: game.Id,
-			Title: game.Title,
+		data = append(data, resultData{
+			Id:     game.Id,
+			Title:  game.Title,
 			Status: game.Status})
 	}
-	result := map[string]interface{} {"status": "ok", "data": data}
+	result := map[string]interface{}{"status": "ok", "data": data}
 	str, _ := json.Marshal(result)
 
 	return str
@@ -64,43 +64,42 @@ func getGameById(id bson.ObjectId) (game models.Game, err config.ApiError) {
 	return
 }
 
-func GetGame(params martini.Params) ([]byte) {
+func GetGame(params martini.Params) []byte {
 	var game = models.Game{}
 	var err config.ApiError
 	var id = bson.ObjectIdHex(params["id"])
 
 	game, err = getGameById(id)
 
-	if (err.Code != 0) {
-		result := map[string]interface{} {"status": "error", "error": err}
+	if err.Code != 0 {
+		result := map[string]interface{}{"status": "error", "error": err}
 		str, _ := json.Marshal(result)
 		return str
 	}
 
-	result := map[string]interface{} {"status": "ok", "game": game}
+	result := map[string]interface{}{"status": "ok", "game": game}
 	str, _ := json.Marshal(result)
 
 	return str
 }
 
-
 func CreateGame(res http.ResponseWriter, req *http.Request) (str []byte) {
 	var (
-		params = utils.BodyToStruct(req)
-		game = models.Game{}
-		user = models.User{}
-		username = params["username"].(string)
+		params      = utils.BodyToStruct(req)
+		game        = models.Game{}
+		user        = models.User{}
+		username    = params["username"].(string)
 		accessToken = req.Header.Get("x-token")
-		result = map[string]interface{} {}
+		result      = map[string]interface{}{}
 	)
 
 	user = FindUser(accessToken, username)
 	game, err := game.Create(params, user)
 	if err.Code != 0 {
-		result = map[string]interface{} {"status": "error", "error": err}
+		result = map[string]interface{}{"status": "error", "error": err}
 	} else {
 		game.Id, _ = services.AddGame(game)
-		result = map[string]interface{} {"status": "ok", "game": game, "access_token": user.Id.Hex()}
+		result = map[string]interface{}{"status": "ok", "game": game, "access_token": user.Id.Hex()}
 	}
 	str, _ = json.Marshal(result)
 	return
@@ -108,17 +107,17 @@ func CreateGame(res http.ResponseWriter, req *http.Request) (str []byte) {
 
 func JoinGame(res http.ResponseWriter, req *http.Request, params martini.Params) (str []byte) {
 	var (
-		id = bson.ObjectIdHex(params["id"])
-		reqParams = utils.BodyToStruct(req)
-		username = reqParams["username"]
+		id          = bson.ObjectIdHex(params["id"])
+		reqParams   = utils.BodyToStruct(req)
+		username    = reqParams["username"]
 		accessToken = req.Header.Get("x-token")
-		result = map[string]interface{}{}
-		user = models.User{}
-		game = models.Game{}
-		err config.ApiError
+		result      = map[string]interface{}{}
+		user        = models.User{}
+		game        = models.Game{}
+		err         config.ApiError
 	)
 
-	if (username == nil && accessToken == "") {
+	if username == nil && accessToken == "" {
 		result = map[string]interface{}{"status": "error", "error": config.ErrNoUser}
 	} else {
 		user = FindUser(accessToken, username.(string))

@@ -1,16 +1,15 @@
 package services
 
 import (
-	"tictactoe/models"
-	"tictactoe/config"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"log"
+	"tictactoe/config"
+	"tictactoe/models"
 )
 
 var (
 	session, err = mgo.Dial("localhost")
-
 )
 
 func init() {
@@ -26,13 +25,13 @@ func GetGames() (result []models.Game) {
 		log.Fatal(err)
 	}
 
-	return result;
+	return result
 }
 
 func GetGame(id bson.ObjectId) (models.Game, config.ApiError) {
 	connection := session.DB("tictactoe").C("games")
 	result := models.Game{}
-	err = connection.Find(bson.M{"_id" : id}).One(&result)
+	err = connection.Find(bson.M{"_id": id}).One(&result)
 	if err != nil {
 		result = models.Game{}
 		return result, config.ErrGameIdWrong
@@ -43,7 +42,7 @@ func GetGame(id bson.ObjectId) (models.Game, config.ApiError) {
 
 func GetUser(id bson.ObjectId) (result models.User, err error) {
 	connection := session.DB("tictactoe").C("users")
-	err = connection.Find(bson.M{"_id" : id}).One(&result)
+	err = connection.Find(bson.M{"_id": id}).One(&result)
 
 	return
 }
@@ -67,7 +66,7 @@ func AddUser(username string) (result models.User, err config.ApiError) {
 		log.Fatal(e)
 	}
 
-	if (info.UpsertedId == nil) {
+	if info.UpsertedId == nil {
 		err = config.ErrCreateUser
 	} else {
 		result = models.User{}
@@ -95,7 +94,7 @@ func AddGame(game models.Game) (newId bson.ObjectId, err config.ApiError) {
 func JoinGame(gameId bson.ObjectId, userId bson.ObjectId) (game models.Game, err config.ApiError) {
 	connection := session.DB("tictactoe").C("games")
 	change := mgo.Change{
-		Update: bson.M{"$set": bson.M{"player2": userId}},
+		Update:    bson.M{"$set": bson.M{"player2": userId}},
 		ReturnNew: true}
 
 	info, e := connection.Find(bson.M{"_id": gameId}).Apply(change, &game)
