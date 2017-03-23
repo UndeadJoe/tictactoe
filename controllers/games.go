@@ -223,11 +223,11 @@ func MakeMove(res http.ResponseWriter, req *http.Request, params martini.Params)
 		}
 	}
 
-	/*if game.Field[row][col].State != 0 {
+	if game.Field[row][col].State != 0 {
 		result = map[string]interface{}{"status": "error", "error": config.ErrBadCell}
 		str, _ = json.Marshal(result)
 		return
-	}*/
+	}
 
 	if game.CurrentTurn != userIndex {
 		result = map[string]interface{}{"status": "error", "error": config.ErrBadPlayer}
