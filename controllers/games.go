@@ -9,6 +9,7 @@ import (
 	"tictactoe/models"
 	"tictactoe/services"
 	"tictactoe/utils"
+	"log"
 )
 
 type resultData struct {
@@ -62,6 +63,38 @@ func getGameById(id bson.ObjectId) (game models.Game, err config.ApiError) {
 
 	_ = populatePlayers(&game)
 	return
+}
+
+func winnerCheck(field [][]models.Field, row int, col int) (int) {
+	var (
+		rowSum = 0
+		colSum = 0
+		diag1Sum = 0
+		diag2Sum = 0
+		poleSize = len(field[row])-1
+		playerIndex = field[row][col].State
+	)
+
+	for i:=0; i <= poleSize; i++ {
+		if field[row][i].State == playerIndex {
+			rowSum++
+		}
+		if field[i][col].State == playerIndex {
+			colSum++
+		}
+		if field[i][i].State == playerIndex {
+			diag1Sum++
+		}
+		if field[i][poleSize-i].State == playerIndex {
+			diag2Sum++
+		}
+	}
+
+	log.Println(playerIndex, rowSum, colSum, diag1Sum, diag2Sum)
+
+	// 58cb7e6370e544685b3431bc
+	// 58d2648bcb47275a068f6f3a
+	return 0
 }
 
 func GetGame(params martini.Params) (str []byte) {
@@ -192,11 +225,11 @@ func MakeMove(res http.ResponseWriter, req *http.Request, params martini.Params)
 		}
 	}
 
-	if game.Field[row][col].State != 0 {
+	/*if game.Field[row][col].State != 0 {
 		result = map[string]interface{}{"status": "error", "error": config.ErrBadCell}
 		str, _ = json.Marshal(result)
 		return
-	}
+	}*/
 
 	if game.CurrentTurn != userIndex {
 		result = map[string]interface{}{"status": "error", "error": config.ErrBadPlayer}
@@ -205,10 +238,12 @@ func MakeMove(res http.ResponseWriter, req *http.Request, params martini.Params)
 	}
 
 	game.CurrentTurn = nextTurn
-	if services.MakeMove(&game, row, col, userIndex) == false {
+	r := services.MakeMove(&game, row, col, userIndex)
+	if r == false {
 		result = map[string]interface{}{"status": "error", "error": config.ErrBadTurn}
 	} else {
 		// TODO: Сделать опеределение победителя
+		game.WinnerIndex = winnerCheck(game.Field, row, col)
 		result = map[string]interface{}{"status": "ok", "filed": game.Field,
 			"winnerIndex": game.WinnerIndex, "winnerName": game.WinnerName}
 	}

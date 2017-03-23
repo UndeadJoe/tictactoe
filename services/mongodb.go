@@ -108,10 +108,10 @@ func JoinGame(gameId bson.ObjectId, userId bson.ObjectId) (game models.Game, err
 	return
 }
 
-func MakeMove(game *models.Game, row int, col int, state int) (bool) {
+func MakeMove(game *models.Game, row int, col int, userIndex int) (bool) {
 	change := mgo.Change{
 		Update: bson.M{"$set":
-			bson.M{	"field." + strconv.Itoa(row) + "." + strconv.Itoa(col) + ".state": state,
+			bson.M{	"field." + strconv.Itoa(row) + "." + strconv.Itoa(col) + ".state": userIndex,
 				"currentTurn": game.CurrentTurn},
 		},
 	}
