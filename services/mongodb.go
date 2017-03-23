@@ -6,6 +6,7 @@ import (
 	"log"
 	"tictactoe/config"
 	"tictactoe/models"
+	"strconv"
 )
 
 var (
@@ -105,4 +106,23 @@ func JoinGame(gameId bson.ObjectId, userId bson.ObjectId) (game models.Game, err
 	}
 
 	return
+}
+
+func MakeMove(game *models.Game, row int, col int, state int) (bool) {
+	change := mgo.Change{
+		Update: bson.M{"$set":
+			bson.M{	"field." + strconv.Itoa(row) + "." + strconv.Itoa(col) + ".state": state,
+				"currentTurn": game.CurrentTurn},
+		},
+	}
+
+	connection := session.DB("tictactoe").C("games")
+	_, e := connection.Find(bson.M{"_id": game.Id}).Apply(change, &game)
+
+	if e != nil {
+		log.Println(e.Error())
+		return false
+	}
+
+	return true
 }

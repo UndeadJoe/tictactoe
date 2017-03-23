@@ -78,3 +78,10 @@ func (p *Game) JoinGame(id bson.ObjectId) (err config.ApiError) {
 	p.Player2Id = id
 	return
 }
+
+func (p *Game) CheckActive() bool {
+	if p.Status == GameStatus()["active"] {
+		return true
+	}
+	return false
+}

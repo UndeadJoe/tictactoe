@@ -9,7 +9,6 @@ import (
 	"tictactoe/models"
 	"tictactoe/services"
 	"tictactoe/utils"
-	"log"
 )
 
 type resultData struct {
@@ -147,11 +146,71 @@ func MakeMove(res http.ResponseWriter, req *http.Request, params martini.Params)
 		reqParams   = utils.BodyToStruct(req)
 		id          = bson.ObjectIdHex(params["id"])
 		accessToken = req.Header.Get("x-token")
+		row         = int(reqParams["row"].(float64))
+		col         = int(reqParams["col"].(float64))
+		game        = models.Game{}
+		err         config.ApiError
+		nextTurn    = 0
+		userIndex   = 0
 	)
 
-	log.Println(id, accessToken, reqParams["row"], reqParams["col"])
+	game, err = getGameById(id)
+	if err.Code != 0 {
+		result = map[string]interface{}{"status": "error", "error": err}
+		str, _ = json.Marshal(result)
+		return
+	}
 
-	result = map[string]interface{}{"status": "ok"}
+	if game.CheckActive() == false {
+		result = map[string]interface{}{"status": "error", "error": config.ErrNoActiveGame}
+		str, _ = json.Marshal(result)
+		return
+	}
+
+	if FindUser(accessToken, "").Name == "" {
+		result = map[string]interface{}{"status": "error", "error": config.ErrNoUser}
+		str, _ = json.Marshal(result)
+		return
+	} else {
+		switch accessToken {
+		case game.Player1Id.Hex():
+			userIndex = 1
+			nextTurn = 2
+			break
+		case game.Player2Id.Hex():
+			userIndex = 2
+			nextTurn = 1
+			break
+		default:
+			userIndex = 0
+		}
+
+		if userIndex == 0 {
+			result = map[string]interface{}{"status": "error", "error": config.ErrBadPlayer}
+			str, _ = json.Marshal(result)
+			return
+		}
+	}
+
+	if game.Field[row][col].State != 0 {
+		result = map[string]interface{}{"status": "error", "error": config.ErrBadCell}
+		str, _ = json.Marshal(result)
+		return
+	}
+
+	if game.CurrentTurn != userIndex {
+		result = map[string]interface{}{"status": "error", "error": config.ErrBadPlayer}
+		str, _ = json.Marshal(result)
+		return
+	}
+
+	game.CurrentTurn = nextTurn
+	if services.MakeMove(&game, row, col, userIndex) == false {
+		result = map[string]interface{}{"status": "error", "error": config.ErrBadTurn}
+	} else {
+		result = map[string]interface{}{"status": "ok", "filed": game.Field,
+			"winnerIndex": game.WinnerIndex, "winnerName": game.WinnerName}
+	}
 
 	str, _ = json.Marshal(result)
 	return
