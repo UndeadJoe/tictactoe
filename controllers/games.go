@@ -9,7 +9,6 @@ import (
 	"tictactoe/models"
 	"tictactoe/services"
 	"tictactoe/utils"
-	"log"
 )
 
 type resultData struct {
@@ -65,17 +64,17 @@ func getGameById(id bson.ObjectId) (game models.Game, err config.ApiError) {
 	return
 }
 
-func winnerCheck(field [][]models.Field, row int, col int) (int) {
+func winnerCheck(field [][]models.Field, row int, col int) (winnerIndex int) {
 	var (
 		rowSum = 0
 		colSum = 0
 		diag1Sum = 0
 		diag2Sum = 0
-		poleSize = len(field[row])-1
+		poleSize = len(field[row])
 		playerIndex = field[row][col].State
 	)
 
-	for i:=0; i <= poleSize; i++ {
+	for i:=0; i < poleSize; i++ {
 		if field[row][i].State == playerIndex {
 			rowSum++
 		}
@@ -85,12 +84,15 @@ func winnerCheck(field [][]models.Field, row int, col int) (int) {
 		if field[i][i].State == playerIndex {
 			diag1Sum++
 		}
-		if field[i][poleSize-i].State == playerIndex {
+		if field[i][poleSize-i-1].State == playerIndex {
 			diag2Sum++
 		}
 	}
+	if (rowSum == poleSize) || (colSum == poleSize) || (diag1Sum == poleSize) || (diag2Sum == poleSize)  {
+		winnerIndex = playerIndex
+	}
 
-	return 0
+	return
 }
 
 func GetGame(params martini.Params) (str []byte) {
