@@ -90,10 +90,6 @@ func winnerCheck(field [][]models.Field, row int, col int) (int) {
 		}
 	}
 
-	log.Println(playerIndex, rowSum, colSum, diag1Sum, diag2Sum)
-
-	// 58cb7e6370e544685b3431bc
-	// 58d2648bcb47275a068f6f3a
 	return 0
 }
 

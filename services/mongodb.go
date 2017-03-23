@@ -112,9 +112,8 @@ func MakeMove(game *models.Game, row int, col int, userIndex int) (bool) {
 	change := mgo.Change{
 		Update: bson.M{"$set":
 			bson.M{	"field." + strconv.Itoa(row) + "." + strconv.Itoa(col) + ".state": userIndex,
-				"currentTurn": game.CurrentTurn},
-		},
-	}
+				"currentTurn": game.CurrentTurn}},
+		ReturnNew: true}
 
 	connection := session.DB("tictactoe").C("games")
 	_, e := connection.Find(bson.M{"_id": game.Id}).Apply(change, &game)
