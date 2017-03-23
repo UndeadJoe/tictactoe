@@ -208,6 +208,7 @@ func MakeMove(res http.ResponseWriter, req *http.Request, params martini.Params)
 	if services.MakeMove(&game, row, col, userIndex) == false {
 		result = map[string]interface{}{"status": "error", "error": config.ErrBadTurn}
 	} else {
+		// TODO: Сделать опеределение победителя
 		result = map[string]interface{}{"status": "ok", "filed": game.Field,
 			"winnerIndex": game.WinnerIndex, "winnerName": game.WinnerName}
 	}
