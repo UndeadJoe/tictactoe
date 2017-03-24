@@ -64,37 +64,6 @@ func getGameById(id bson.ObjectId) (game models.Game, err config.ApiError) {
 	return
 }
 
-func winnerCheck(field [][]models.Field, row int, col int) (winnerIndex int) {
-	var (
-		rowSum = 0
-		colSum = 0
-		diag1Sum = 0
-		diag2Sum = 0
-		poleSize = len(field[row])
-		playerIndex = field[row][col].State
-	)
-
-	for i:=0; i < poleSize; i++ {
-		if field[row][i].State == playerIndex {
-			rowSum++
-		}
-		if field[i][col].State == playerIndex {
-			colSum++
-		}
-		if field[i][i].State == playerIndex {
-			diag1Sum++
-		}
-		if field[i][poleSize-i-1].State == playerIndex {
-			diag2Sum++
-		}
-	}
-	if (rowSum == poleSize) || (colSum == poleSize) || (diag1Sum == poleSize) || (diag2Sum == poleSize)  {
-		winnerIndex = playerIndex
-	}
-
-	return
-}
-
 func GetGame(params martini.Params) (str []byte) {
 	var game = models.Game{}
 	var err config.ApiError
@@ -223,7 +192,7 @@ func MakeMove(res http.ResponseWriter, req *http.Request, params martini.Params)
 		}
 	}
 
-	if game.Field[row][col].State != 0 {
+	if (row >= game.PoleSize || col >= game.PoleSize || game.Field[row][col].State != 0) {
 		result = map[string]interface{}{"status": "error", "error": config.ErrBadCell}
 		str, _ = json.Marshal(result)
 		return
@@ -241,7 +210,7 @@ func MakeMove(res http.ResponseWriter, req *http.Request, params martini.Params)
 		result = map[string]interface{}{"status": "error", "error": config.ErrBadTurn}
 	} else {
 		// TODO: Сделать опеределение победителя
-		game.WinnerIndex = winnerCheck(game.Field, row, col)
+		game.WinnerCheck(row, col)
 		result = map[string]interface{}{"status": "ok", "filed": game.Field,
 			"winnerIndex": game.WinnerIndex, "winnerName": game.WinnerName}
 	}

@@ -85,3 +85,35 @@ func (p *Game) CheckActive() bool {
 	}
 	return false
 }
+
+// Winner check after players turn
+func (p *Game) WinnerCheck(row int, col int) (winnerIndex int) {
+	var (
+		rowSum = 0
+		colSum = 0
+		diag1Sum = 0
+		diag2Sum = 0
+		poleSize = len(p.Field[row])
+		playerIndex = p.Field[row][col].State
+	)
+
+	for i:=0; i < poleSize; i++ {
+		if p.Field[row][i].State == playerIndex {
+			rowSum++
+		}
+		if p.Field[i][col].State == playerIndex {
+			colSum++
+		}
+		if p.Field[i][i].State == playerIndex {
+			diag1Sum++
+		}
+		if p.Field[i][poleSize-i-1].State == playerIndex {
+			diag2Sum++
+		}
+	}
+	if (rowSum == poleSize) || (colSum == poleSize) || (diag1Sum == poleSize) || (diag2Sum == poleSize)  {
+		winnerIndex = playerIndex
+	}
+
+	return
+}
