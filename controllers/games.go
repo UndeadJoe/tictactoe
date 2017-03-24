@@ -211,7 +211,7 @@ func MakeMove(res http.ResponseWriter, req *http.Request, params martini.Params)
 	} else {
 		// TODO: Сделать опеределение победителя
 		game.WinnerCheck(row, col)
-		result = map[string]interface{}{"status": "ok", "filed": game.Field,
+		result = map[string]interface{}{"status": "ok", "field": game.Field,
 			"winnerIndex": game.WinnerIndex, "winnerName": game.WinnerName}
 	}
 
